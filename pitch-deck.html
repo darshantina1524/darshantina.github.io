@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-Me — Pitch Deck</title>
+<style>
+  :root{
+    --bg:#0b0a14;
+    --bg2:#141026;
+    --ink:#f4f2ff;
+    --muted:#a39fc4;
+    --accent:#7c5cff;
+    --accent2:#ff6ba6;
+    --card:rgba(255,255,255,.04);
+    --border:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 800px at 70% -10%, #241a4d 0%, transparent 55%),
+               radial-gradient(900px 700px at 0% 110%, #3a1740 0%, transparent 50%),
+               var(--bg);
+    color:var(--ink);
+    overflow:hidden;
+  }
+  .deck{position:relative;height:100vh;width:100vw}
+  .slide{
+    position:absolute;inset:0;
+    display:none;
+    flex-direction:column;justify-content:center;
+    padding:clamp(28px,6vw,110px);
+    opacity:0;transform:translateY(14px);
+    transition:opacity .45s ease, transform .45s ease;
+  }
+  .slide.active{display:flex;opacity:1;transform:none}
+  .eyebrow{
+    font-size:clamp(11px,1.1vw,13px);letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent2);font-weight:700;margin-bottom:18px;
+  }
+  h1{font-size:clamp(40px,7.5vw,104px);line-height:1.02;letter-spacing:-.03em;font-weight:800}
+  h2{font-size:clamp(28px,4.4vw,56px);line-height:1.06;letter-spacing:-.02em;font-weight:800;margin-bottom:22px}
+  .lead{font-size:clamp(18px,2.2vw,30px);color:var(--muted);line-height:1.45;max-width:24ch;margin-top:24px}
+  .body{font-size:clamp(16px,1.5vw,21px);color:var(--ink);line-height:1.55;max-width:60ch}
+  .gradient{background:linear-gradient(100deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .grid{display:grid;gap:18px;margin-top:34px}
+  .grid.two{grid-template-columns:repeat(2,1fr)}
+  .grid.three{grid-template-columns:repeat(3,1fr)}
+  .grid.four{grid-template-columns:repeat(4,1fr)}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:18px;
+    padding:clamp(18px,2vw,28px);backdrop-filter:blur(6px);
+  }
+  .card h3{font-size:clamp(16px,1.5vw,20px);margin-bottom:8px;font-weight:700}
+  .card p{font-size:clamp(13px,1.2vw,16px);color:var(--muted);line-height:1.5}
+  .stat{font-size:clamp(34px,5vw,64px);font-weight:800;letter-spacing:-.03em;line-height:1}
+  .stat .gradient{display:inline}
+  .statlabel{color:var(--muted);font-size:clamp(13px,1.2vw,16px);margin-top:10px}
+  ul.clean{list-style:none;margin-top:26px;display:flex;flex-direction:column;gap:16px;max-width:60ch}
+  ul.clean li{display:flex;gap:14px;font-size:clamp(16px,1.6vw,22px);line-height:1.4}
+  ul.clean li::before{content:"";flex:0 0 10px;height:10px;margin-top:.5em;border-radius:50%;
+    background:linear-gradient(120deg,var(--accent),var(--accent2))}
+  .tiers{display:flex;flex-direction:column;gap:10px;margin-top:30px;max-width:680px}
+  .tier{display:flex;align-items:center;gap:16px}
+  .tier .bar{height:14px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  .tier .name{width:140px;font-weight:700;font-size:clamp(14px,1.4vw,18px)}
+  .tier .desc{color:var(--muted);font-size:clamp(12px,1.1vw,15px)}
+  .pill{display:inline-block;border:1px solid var(--border);background:var(--card);
+    padding:8px 16px;border-radius:999px;font-size:14px;color:var(--muted);margin:6px 8px 0 0}
+  .cmp{width:100%;border-collapse:collapse;margin-top:28px;font-size:clamp(13px,1.3vw,18px)}
+  .cmp th,.cmp td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--border)}
+  .cmp th{color:var(--muted);font-weight:600;font-size:.8em;text-transform:uppercase;letter-spacing:.08em}
+  .cmp .yes{color:#7CFFB2;font-weight:700}
+  .cmp .no{color:#ff7c97}
+  .cmp tr.us td{background:linear-gradient(90deg,rgba(124,92,255,.16),rgba(255,107,166,.10))}
+  .cmp tr.us td:first-child{font-weight:800}
+  .founders{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:34px;max-width:900px}
+  .founder{display:flex;flex-direction:column;gap:6px}
+  .founder .nm{font-size:clamp(20px,2vw,26px);font-weight:800}
+  .founder .role{color:var(--accent2);font-weight:700;font-size:clamp(13px,1.2vw,15px);letter-spacing:.04em}
+  .founder .bio{color:var(--muted);font-size:clamp(14px,1.3vw,17px);line-height:1.5;margin-top:4px}
+  .big-quote{font-size:clamp(26px,4vw,52px);font-weight:800;line-height:1.12;letter-spacing:-.02em;max-width:18ch}
+  .footer-note{margin-top:30px;color:var(--muted);font-size:clamp(14px,1.4vw,19px)}
+  a.link{color:var(--accent2);text-decoration:none;border-bottom:1px solid rgba(255,107,166,.4)}
+
+  /* chrome */
+  .nav{position:fixed;bottom:22px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:18px;z-index:20}
+  .dots{display:flex;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22);cursor:pointer;transition:.2s}
+  .dot.active{background:linear-gradient(120deg,var(--accent),var(--accent2));transform:scale(1.35)}
+  .arrow{width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:var(--card);
+    color:var(--ink);font-size:18px;cursor:pointer;display:grid;place-items:center;transition:.2s}
+  .arrow:hover{background:rgba(255,255,255,.10)}
+  .counter{position:fixed;top:24px;right:28px;color:var(--muted);font-size:13px;letter-spacing:.1em;z-index:20}
+  .brand{position:fixed;top:22px;left:28px;font-weight:800;letter-spacing:-.01em;font-size:16px;z-index:20}
+  .brand .dotmark{color:var(--accent2)}
+  .progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:30;transition:width .4s ease}
+  .hint{position:fixed;bottom:24px;right:28px;color:var(--muted);font-size:12px;z-index:20;opacity:.7}
+  @media (max-width:720px){
+    .grid.two,.grid.three,.grid.four{grid-template-columns:1fr}
+    .founders{grid-template-columns:1fr}
+    .lead{max-width:none}
+    .tier .name{width:96px}
+    .hint{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="brand">mini<span class="dotmark">·</span>me</div>
+<div class="counter" id="counter">01 / 12</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide active">
+    <div class="eyebrow">Personal AI · Relationship-aware</div>
+    <h1>Your personal AI,<br><span class="gradient">shared on your terms.</span></h1>
+    <p class="lead">A living version of you that the people who matter can reach anytime — even when you're busy, away, or gone.</p>
+    <div class="footer-note">mini-me.space</div>
+  </section>
+
+  <!-- 2 PROBLEM -->
+  <section class="slide">
+    <div class="eyebrow">The Problem</div>
+    <h2>The people you rely on<br>aren't always reachable.</h2>
+    <p class="body">Filing taxes means chasing each other for documents. A medical emergency means a family breaking into a phone to find an insurance policy. When someone passes, heirs scramble for accounts they can't find.</p>
+    <ul class="clean">
+      <li>Personal data today is <strong>all-or-nothing</strong> — locked in one head or fully public.</li>
+      <li>Nothing maps to how <strong>relationships actually work.</strong></li>
+      <li>People cope by repeating themselves, endless back-and-forth, or breaking in.</li>
+    </ul>
+  </section>
+
+  <!-- 3 SOLUTION -->
+  <section class="slide">
+    <div class="eyebrow">The Solution</div>
+    <h2>Mini-Me — a personal AI<br>agent trained on <span class="gradient">you.</span></h2>
+    <p class="body">Upload your bios, journals, documents, and Q&amp;As. Mini-Me indexes them and answers as you would. Share one link; the people who matter can ask your agent anything they're allowed to — asynchronously, anytime.</p>
+    <div class="grid three">
+      <div class="card"><h3>Trained on real data</h3><p>Your stories, knowledge, and personality — not a generic chatbot.</p></div>
+      <div class="card"><h3>Answers as you</h3><p>RAG pipeline draws only from what you've shared at each access level.</p></div>
+      <div class="card"><h3>On your terms</h3><p>You decide who sees what. Always.</p></div>
+    </div>
+  </section>
+
+  <!-- 4 HOW IT WORKS -->
+  <section class="slide">
+    <div class="eyebrow">The Insight</div>
+    <h2>Relationships are layered.<br>So is your Mini-Me.</h2>
+    <p class="body">The access tier isn't a feature — it's the architecture. A stranger gets the surface. Your partner can ask anything.</p>
+    <div class="tiers">
+      <div class="tier"><div class="name">Public</div><div class="bar" style="width:90px"></div><div class="desc">Anyone — surface-level you</div></div>
+      <div class="tier"><div class="name">Friends</div><div class="bar" style="width:170px"></div><div class="desc">More context, shared history</div></div>
+      <div class="tier"><div class="name">Close friends</div><div class="bar" style="width:250px"></div><div class="desc">Personal, candid</div></div>
+      <div class="tier"><div class="name">Family</div><div class="bar" style="width:330px"></div><div class="desc">Records, logistics, health</div></div>
+      <div class="tier"><div class="name">Partner</div><div class="bar" style="width:420px"></div><div class="desc">Everything — full access</div></div>
+    </div>
+  </section>
+
+  <!-- 5 PRODUCT -->
+  <section class="slide">
+    <div class="eyebrow">The Product</div>
+    <h2>Live, and people are<br>using it today.</h2>
+    <p class="body">Create an account, build your agent by uploading data, set access tiers per relationship, and invite people to chat. Fully functional at <a class="link" href="https://mini-me.space/">mini-me.space</a>.</p>
+    <div class="grid four">
+      <div class="card"><h3>Create</h3><p>Spin up your agent in minutes.</p></div>
+      <div class="card"><h3>Upload</h3><p>Docs, bios, journals, Q&amp;As.</p></div>
+      <div class="card"><h3>Tier</h3><p>Set who sees what.</p></div>
+      <div class="card"><h3>Share</h3><p>One link to the real you.</p></div>
+    </div>
+    <div class="footer-note">Provisional patent filed — personalized AI agents with tiered relational access control.</div>
+  </section>
+
+  <!-- 6 TRACTION -->
+  <section class="slide">
+    <div class="eyebrow">Traction</div>
+    <h2>One LinkedIn post.<br>Zero marketing.</h2>
+    <div class="grid four">
+      <div class="card"><div class="stat"><span class="gradient">28</span></div><div class="statlabel">users signed up</div></div>
+      <div class="card"><div class="stat"><span class="gradient">20</span></div><div class="statlabel">agents created</div></div>
+      <div class="card"><div class="stat"><span class="gradient">250+</span></div><div class="statlabel">messages exchanged</div></div>
+      <div class="card"><div class="stat"><span class="gradient">71%</span></div><div class="statlabel">activation rate</div></div>
+    </div>
+    <p class="body" style="margin-top:30px">No paid acquisition, no outreach, no referral incentives — just people who built something the moment they saw it. Use cases came unprompted: elderly parents' medical records, shared finances with a spouse.</p>
+  </section>
+
+  <!-- 7 MARKET -->
+  <section class="slide">
+    <div class="eyebrow">Market</div>
+    <h2>Everyone has people<br>who depend on them.</h2>
+    <p class="body">Customers are couples, families, and busy professionals who want loved ones to reach them anytime — even when away or gone.</p>
+    <div class="grid three">
+      <div class="card"><div class="stat"><span class="gradient">$264M</span></div><div class="statlabel">Consumer ARR @ 1% of smartphone users (sub + ads)</div></div>
+      <div class="card"><div class="stat"><span class="gradient">$562M</span></div><div class="statlabel">Enterprise ARR @ 1% adoption, seat-based</div></div>
+      <div class="card"><div class="stat"><span class="gradient">~$826M</span></div><div class="statlabel">Total modeled ARR at 1% penetration</div></div>
+    </div>
+  </section>
+
+  <!-- 8 BUSINESS MODEL -->
+  <section class="slide">
+    <div class="eyebrow">Business Model</div>
+    <h2>Freemium consumer.<br>B2B SaaS seats.</h2>
+    <ul class="clean">
+      <li><strong>Free</strong> to build an agent — top of funnel and the data moat.</li>
+      <li><strong>~$1/mo premium</strong> tier for power users; ads monetize free users.</li>
+      <li><strong>$6–10/seat/mo</strong> B2B for teams and enterprises.</li>
+      <li><strong>Near-zero marginal cost</strong> per agent — local embeddings, serverless Postgres.</li>
+    </ul>
+  </section>
+
+  <!-- 9 COMPETITION -->
+  <section class="slide">
+    <div class="eyebrow">Competition</div>
+    <h2>Nobody combines all three.</h2>
+    <table class="cmp">
+      <thead><tr><th></th><th>Living agent</th><th>Real personal data</th><th>Relationship access</th></tr></thead>
+      <tbody>
+        <tr><td>HereAfter / StoryFile</td><td class="no">✕ static archive</td><td class="yes">✓</td><td class="no">✕</td></tr>
+        <tr><td>Rewind / Personal.ai</td><td class="yes">✓</td><td class="yes">✓ but private to you</td><td class="no">✕</td></tr>
+        <tr><td>Replika</td><td class="yes">✓ fictional</td><td class="no">✕</td><td class="no">✕</td></tr>
+        <tr class="us"><td>Mini-Me</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      </tbody>
+    </table>
+    <p class="footer-note">Legacy tools are built around death. We're built for the alive-but-unavailable — the everyday case.</p>
+  </section>
+
+  <!-- 10 MOAT / VISION -->
+  <section class="slide">
+    <div class="eyebrow">The Moat</div>
+    <p class="big-quote">The value isn't one agent. It's a <span class="gradient">social graph of agents.</span></p>
+    <p class="body" style="margin-top:28px">When your Mini-Me coordinates with your partner's to plan a trip, or a doctor's agent securely queries a patient's, the network becomes more valuable than any single node. Competitors build point solutions. We're building the platform.</p>
+  </section>
+
+  <!-- 11 TEAM -->
+  <section class="slide">
+    <div class="eyebrow">Team</div>
+    <h2>We lived this problem,<br>then built the fix.</h2>
+    <div class="founders">
+      <div class="founder">
+        <span class="nm">Darshan Tina</span>
+        <span class="role">CO-FOUNDER &amp; CEO</span>
+        <span class="bio">Software engineer at Meta, ex-staff engineer at Intuit. CMU master's. Built the full stack — RAG, tiered access control, the patent-pending architecture.</span>
+      </div>
+      <div class="founder">
+        <span class="nm">Maitri Vasa</span>
+        <span class="role">CO-FOUNDER &amp; CPO</span>
+        <span class="bio">Product manager in tech, CMU master's. Drives product vision, UX, and go-to-market. Both hold CS engineering degrees.</span>
+      </div>
+    </div>
+    <p class="footer-note">Married, partners since meeting at CMU 7 years ago. Built a live, patent-pending product in ~10 weeks of nights and weekends.</p>
+  </section>
+
+  <!-- 12 CLOSING -->
+  <section class="slide">
+    <div class="eyebrow">What's Next</div>
+    <h1>A living you,<br><span class="gradient">on your terms.</span></h1>
+    <p class="lead">Native mobile apps, custom access tiers, and the social graph of agents — turning organic traction into a category.</p>
+    <div style="margin-top:30px">
+      <span class="pill">mini-me.space</span>
+      <span class="pill">Provisional patent filed</span>
+      <span class="pill">Live &amp; growing</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button class="arrow" id="prev" aria-label="Previous">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="arrow" id="next" aria-label="Next">›</button>
+</div>
+<div class="hint">← → or space to navigate</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  let i = 0;
+
+  slides.forEach((_, idx) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (idx === 0 ? ' active' : '');
+    d.addEventListener('click', () => go(idx));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(document.querySelectorAll('.dot'));
+
+  function pad(n){return String(n).padStart(2,'0')}
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+    counter.textContent = pad(i + 1) + ' / ' + pad(slides.length);
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  function next(){go(i + 1)}
+  function prev(){go(i - 1)}
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown'){e.preventDefault();next()}
+    if(e.key === 'ArrowLeft' || e.key === 'PageUp'){e.preventDefault();prev()}
+    if(e.key === 'Home'){go(0)}
+    if(e.key === 'End'){go(slides.length - 1)}
+  });
+  // touch swipe
+  let x0 = null;
+  document.addEventListener('touchstart', e => x0 = e.touches[0].clientX, {passive:true});
+  document.addEventListener('touchend', e => {
+    if(x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx) > 50){ dx < 0 ? next() : prev(); }
+    x0 = null;
+  }, {passive:true});
+
+  go(0);
+</script>
+</body>
+</html>
